@@ -12,6 +12,9 @@ class Homepage extends StatefulWidget {
 class _HomepageState extends State<Homepage> {
   final CollectionReference donor = FirebaseFirestore.instance.collection(
       'donor');
+  void deleteDonor(docId){
+    donor.doc(docId).delete();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,19 +27,19 @@ class _HomepageState extends State<Homepage> {
         onPressed: () {
           Navigator.pushNamed(context, '/add');
         },
-        backgroundColor: Colors.red,
-        child: Icon(Icons.add, size: 30,),
+        backgroundColor: Colors.white,
+        child: Icon(Icons.add, size: 30,color: Colors.red,),
 
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButtonLocation: FloatingActionButtonLocation.miniEndTop,
       body: StreamBuilder(
-          stream: donor.snapshots(),
+          stream: donor.orderBy('Name').snapshots(),
           builder: (context, AsyncSnapshot snapshot) {
             if (snapshot.hasData) {
               return ListView.builder(
                   itemCount: snapshot.data!.docs.length,
                   itemBuilder: (context, index) {
-                    final DocumentSnapshot donorsnap = snapshot.data
+                    final DocumentSnapshot donorSnap = snapshot.data
                         .docs[index];
                     return Padding(
                       padding: const EdgeInsets.all(10.0),
@@ -58,7 +61,7 @@ class _HomepageState extends State<Homepage> {
                                 child: CircleAvatar(
                                   backgroundColor: Colors.red,
                                   radius: 30,
-                                  child: Text(donorsnap['group'],
+                                  child: Text(donorSnap['Group'],
                                     style: TextStyle(fontSize: 25),
                                   ),
                                 ),
@@ -67,14 +70,23 @@ class _HomepageState extends State<Homepage> {
                             Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Text(donorsnap['Name'],style: TextStyle(fontSize: 18,color: Colors.black),),
-                                Text(donorsnap['Phone'].toString(),style: TextStyle(fontSize: 18,color: Colors.black),),
+                                Text(donorSnap['Name'],style: TextStyle(fontSize: 18,color: Colors.black),),
+                                Text(donorSnap['Phone'].toString(),style: TextStyle(fontSize: 18,color: Colors.black),),
                               ],
                             ),
                             Row(
                               children: [
-                                IconButton(onPressed: (){}, icon:Icon(Icons.edit) ,iconSize: 30,color: Colors.blue,),
-                                IconButton(onPressed: (){}, icon:Icon(Icons.delete),iconSize: 30,color: Colors.red, ),
+                                IconButton(onPressed: (){Navigator.pushNamed(context, '/Update',
+                                  arguments: {
+                                  'Name':donorSnap['Name'],
+                                    'Phone':donorSnap['Phone'].toString(),
+                                    'Group':donorSnap['Group'],
+                                    'id':donorSnap.id,
+                                  }
+                                );}, icon:Icon(Icons.edit) ,iconSize: 30,color: Colors.blue,),
+                                IconButton(onPressed: (){
+                                  deleteDonor(donorSnap.id);
+                                }, icon:Icon(Icons.delete),iconSize: 30,color: Colors.red, ),
                               ],
                             )
 

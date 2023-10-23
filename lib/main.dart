@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'projectapp/Home.dart';
 import 'projectapp/Add.dart';
+import 'projectapp/Update.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 Future<void> main() async {
@@ -21,8 +22,10 @@ class MyApp extends StatelessWidget {
 routes: {
         '/':(context)=>Homepage(),
   '/add':(context)=>AddUsers(),
+  '/Update':(context)=>UpdateDonor(),
 },
       initialRoute: '/',
+      debugShowCheckedModeBanner: false,
     );
   }
 }
